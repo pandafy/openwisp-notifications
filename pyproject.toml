@@ -1,7 +1,13 @@
 [tool.coverage.run]
 source = ["openwisp_notifications"]
 parallel = true
-concurrency = ["multiprocessing"]
+# To ensure correct coverage, we need to include both
+# "multiprocessing" and "thread" in the concurrency list.
+# This is because Django test suite incorrectly reports coverage
+# when "multiprocessing" is omitted and the "--parallel" flag
+# is used. Similarly, coverage for websocket consumers is
+# incorrect when "thread" is omitted and pytest is used.
+concurrency = ["multiprocessing", "thread"]
 omit = [
     "openwisp_notifications/__init__.py",
     "*/tests/*",
@@ -9,10 +15,10 @@ omit = [
 ]
 
 [tool.docstrfmt]
-extend_exclude = ["**/*.py", "README.rst"]
+extend_exclude = ["**/*.py"]
 
 [tool.isort]
-known_third_party = ["django", "django_x509"]
+known_third_party = ["django", "django_x509", "notifications"]
 known_first_party = ["openwisp_users", "openwisp_utils", "openwisp_notifications"]
 default_section = "THIRDPARTY"
 line_length = 88
